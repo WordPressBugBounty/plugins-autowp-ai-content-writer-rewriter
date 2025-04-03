@@ -1,0 +1,1 @@
+# plugins-autowp-ai-content-writer-rewriter
