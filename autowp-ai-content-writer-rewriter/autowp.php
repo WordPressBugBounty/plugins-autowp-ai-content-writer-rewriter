@@ -6,7 +6,7 @@
  * Plugin Name:       AutoWP - AI Content Writer & Rewriter
  * Plugin URI:        https://autowp.app
  * Description:       AI Content Writer & Rewriter. Write content with AI from zero. Import content from RSS, Wordpress and rewrite with AI. Generate SEO optimized content,tags,title and generate image. ChatGPT, Content Writer, Auto Content Writer, Image Generator, AutoGPT, ChatPDF, SEO optimizer, AI Training.
- * Version:           2.2.1
+ * Version:           2.2.2
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Neuralabz LTD.
@@ -702,6 +702,8 @@ add_filter( 'cron_schedules', 'autowp_custom_intervals' );
 function autowp_fetch_announcements() {
   // autowp_settings opsiyonunu al ve çöz
   $settings_option = get_option( 'autowp_settings' );
+  $server_url = unserialize(get_option("autowp_settings"))["autowp_server_url"];
+
   
   if ( empty( $settings_option ) ) {
       return; // Ayar yoksa işlemi durdur
@@ -712,6 +714,20 @@ function autowp_fetch_announcements() {
   $api_key = isset( $settings['api_key'] ) ? $settings['api_key'] : '';
 
   $api_url = 'https://api.autowp.app/announcements';
+
+     
+  
+
+  if ( isset( $server_url ) 
+     && $server_url !== null 
+     && $server_url !== '' 
+     && strpos( $server_url, 'autowp.app' ) === false
+  ) {
+    
+    $api_url = $server_url . '/announcements';
+
+  }
+
 
   // API isteğini api_key varsa ona göre yapılandır
   $request_url = ! empty( $api_key ) ? add_query_arg( 'api_key', $api_key, $api_url ) : $api_url;
@@ -885,8 +901,25 @@ function autowp_get_posts_from_wp_website($user_domainname, $user_email, $websit
 
   $prompt_option_string = json_encode($prompts_option);
 
+  $server_url = unserialize(get_option("autowp_settings"))["autowp_server_url"];
+
+
+
     
   $url = 'https://api.autowp.app/latest-posts';
+
+  if ( isset( $server_url ) 
+     && $server_url !== null 
+     && $server_url !== '' 
+     && strpos( $server_url, 'autowp.app' ) === false
+  ) {
+    
+    $url = $server_url . '/latest-posts';
+
+  }
+
+  
+
   
   $data = array(
       'user_domainname'         => $user_domainname,
@@ -982,7 +1015,8 @@ function autowp_set_wpcron(){
      "duplicate_content_filter" => '1',      // Default value for duplicate content filter (active)
      "primary_llm" => 'openai',
      "secondary_llm" => 'xai',
-     "default_image_url" => "https://gorsel.autowp.app/en/en/1.png"
+     "default_image_url" => "https://gorsel.autowp.app/en/en/1.png",
+     "autowp_server_url" => 'https://api.autowp.app',
 
   );
 
@@ -1069,8 +1103,27 @@ register_deactivation_hook(__FILE__,'autowp_unset_wpcron');
 
 
 function autowp_get_user_from_autowp_api() {
+
+  $server_url = unserialize(get_option("autowp_settings"))["autowp_server_url"];
+
+
   // API URL'si
   $url = 'https://api.autowp.app/getUserByDomain';
+
+
+
+     
+  
+
+  if ( isset( $server_url ) 
+     && $server_url !== null 
+     && $server_url !== '' 
+     && strpos( $server_url, 'autowp.app' ) === false
+  ) {
+    
+    $url = $server_url . '/getUserByDomain';
+
+  }
   
   // Setup kısmında kaydedilen ayarları al
   $autowp_settings = get_option('autowp_settings');
@@ -1701,6 +1754,8 @@ function autowp_isValidDomain($domain) {
 
 
 function autowp_is_site_working($site_url, $site_type) {
+
+
   $api_url = 'https://api.autowp.app/check_website'; // Flask API URL
 
   // JSON formatında veriyi hazırlayın
@@ -1931,6 +1986,24 @@ function autowp_is_cron_executed_recently($cron_name) {
 
 
 function autowp_settings_page_set_options() {
+  $server_url = unserialize(get_option("autowp_settings"))["autowp_server_url"];
+
+
+  $url = 'https://api.autowp.app/confirm_email';
+
+  if ( isset( $server_url ) 
+     && $server_url !== null 
+     && $server_url !== '' 
+     && strpos( $server_url, 'autowp.app' ) === false
+  ) {
+    
+    $url = $server_url . '/confirm_email';
+
+  }
+  
+
+
+
   
   if (isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'autowp_settings_nonce')) {
 
@@ -1953,7 +2026,7 @@ function autowp_settings_page_set_options() {
     );
 
     // Send a POST request to the Flask API
-    $api_response = wp_remote_post('https://api.autowp.app/confirm_email', $api_request_body);
+    $api_response = wp_remote_post($url, $api_request_body);
 
     // Check for errors in the API response
     $save_api_key_email = false;
@@ -2022,7 +2095,9 @@ if ($existing_settings_serialized) {
       "twitter_api_key" => sanitize_text_field($_POST['twitter_api_key']),
       "telegram_api_key" => sanitize_text_field($_POST['telegram_api_key']),
       "instagram_api_key" => sanitize_text_field($_POST['instagram_api_key']),
-      "openai_base_url" => sanitize_text_field($_POST['openai_base_url'])
+      "openai_base_url" => sanitize_text_field($_POST['openai_base_url']),
+
+      "autowp_server_url" => sanitize_text_field($_POST['autowp_server_url'])
 
 
     );
@@ -3260,7 +3335,16 @@ function autowp_settings_page_handler() {
     </div>
 </div>
 
+      <legend><?php esc_html_e('Server Settings', 'autowp'); ?></legend>
 
+<!-- AutoWP Server Base URL  -->
+<div class="form-group">
+    <label class="col-md-4 control-label" for="autowp_server_url"><?php esc_html_e('AutoWP Server Base URL', 'autowp'); ?></label>
+    <div class="col-md-4">
+        <input id="autowp_server_url" name="autowp_server_url" type="text" class="form-control" value="<?php echo esc_attr(unserialize(get_option("autowp_settings"))["autowp_server_url"]); ?>" placeholder="<?php esc_html_e('Enter AutoWP Backend Server Base URL (only if you have LİFETIME package): ', 'autowp'); ?>">
+        <p class="help-block"><?php esc_html_e('IMPORTANT WARNING! This field should only be used by users with the SELF HOSTING/LIFETIME package. The AutoWP plugin will not function properly if users with packages other than the Lifetime package change it.', 'autowp'); ?></p>
+    </div>
+</div>
 
 
       <!-- Button -->
@@ -6568,6 +6652,23 @@ function autowp_prompt_settings_page_handler(){
 function autowp_setup_page() {
   $user_email = wp_get_current_user()->user_email;
 
+    $server_url = unserialize(get_option("autowp_settings"))["autowp_server_url"];
+
+
+   $url = 'https://api.autowp.app/register_email';
+   $url_confirm = 'https://api.autowp.app/confirm_email';
+
+  if ( isset( $server_url ) 
+     && $server_url !== null 
+     && $server_url !== '' 
+     && strpos( $server_url, 'autowp.app' ) === false
+  ) {
+    
+    $url = $server_url . '/register_email';
+    $url_confirm = $server_url . '/confirm_email';
+
+  }
+
   ?>
   <div class="wrap">
       <h1><?php esc_html_e('AutoWP Setup', 'autowp'); ?></h1>
@@ -6628,7 +6729,7 @@ function autowp_setup_page() {
           // API çağrısını yap
           // API çağrısını yap
 $.ajax({
-    url: 'https://api.autowp.app/register_email',
+    url: '<?php echo esc_url( $url ); ?>',
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({ user_email: email }),
@@ -6666,7 +6767,7 @@ $.ajax({
 
          // API confirm_email çağrısını yap
 $.ajax({
-    url: 'https://api.autowp.app/confirm_email',
+    url: '<?php echo esc_url( $url_confirm ); ?>',
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({ user_email: email, api_key: api_key }),
@@ -6953,6 +7054,25 @@ add_action('admin_menu','autowp_setAdminMenu');
 
 
 function autowp_transactions_page_handler() {
+
+
+   $server_url = unserialize(get_option("autowp_settings"))["autowp_server_url"];
+
+
+   $autowp_server_url = 'https://api.autowp.app';
+   
+
+  if ( isset( $server_url ) 
+     && $server_url !== null 
+     && $server_url !== '' 
+     && strpos( $server_url, 'autowp.app' ) === false
+  ) {
+     $autowp_server_url = $server_url;
+
+  }
+
+
+
   // Enqueue Bootstrap styles and scripts
   wp_enqueue_style('bootstrap-css', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
   wp_enqueue_script('bootstrap-js', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js', array('jquery'), null, true);
@@ -7058,6 +7178,9 @@ function autowp_transactions_page_handler() {
   </div>
 
   <script type="text/javascript">
+
+    const API_BASE_URL = '<?php echo esc_js( $autowp_server_url ); ?>';
+    
   document.addEventListener('DOMContentLoaded', function() {
       var userEmail = '<?php 
     $settings = unserialize(get_option('autowp_settings')); 
@@ -7077,7 +7200,8 @@ function autowp_transactions_page_handler() {
 
   function fetchTransactions(userEmail) {
       // Post Transactions
-      fetch('https://api.autowp.app/post_transactions?user_email=' + userEmail)
+      fetch(API_BASE_URL + '/post_transactions?user_email=' + encodeURIComponent(userEmail))
+
       .then(response => response.json())
       .then(data => {
           var postTable = document.getElementById('post-transactions-table');
@@ -7104,7 +7228,8 @@ function autowp_transactions_page_handler() {
       });
 
       // Image Transactions
-      fetch('https://api.autowp.app/image_transactions?user_email=' + userEmail)
+      fetch(API_BASE_URL + '/image_transactions?user_email=' + encodeURIComponent(userEmail))
+
       .then(response => response.json())
       .then(data => {
           var imageTable = document.getElementById('image-transactions-table');
@@ -7134,7 +7259,8 @@ function autowp_transactions_page_handler() {
       });
 
       // Exceptions
-      fetch('https://api.autowp.app/exceptions?user_mail=' + userEmail)
+      fetch(API_BASE_URL + '/exceptions?user_mail=' + encodeURIComponent(userEmail))
+
       .then(response => response.json())
       .then(data => {
           var exceptionsTable = document.getElementById('exceptions-table');
