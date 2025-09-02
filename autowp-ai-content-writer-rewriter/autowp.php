@@ -6,7 +6,7 @@
  * Plugin Name:       AutoWP - AI Content Writer & Rewriter
  * Plugin URI:        https://autowp.app
  * Description:       AI Content Writer & Rewriter. Write content with AI from zero. Import content from RSS, Wordpress and rewrite with AI. Generate SEO optimized content,tags,title and generate image. ChatGPT, Content Writer, Auto Content Writer, Image Generator, AutoGPT, ChatPDF, SEO optimizer, AI Training.
- * Version:           2.2.2
+ * Version:           2.2.3
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Neuralabz LTD.
@@ -996,6 +996,7 @@ function autowp_set_wpcron(){
     "selected_time_type" => '1',
     "wpcron_status" => '1',
     "watermark_link" => '',
+    "nano_banana_prompt" => '',
     "image_modification_status" => '0',
     "image_generating_status" => '0',
     "ai_image_width" =>  0,
@@ -2059,6 +2060,7 @@ if ($existing_settings_serialized) {
       "selected_time_type" => sanitize_text_field($_POST["selected_time_type"]),
       "wpcron_status" => sanitize_text_field($_POST['wpcron_status']),
       "watermark_link" => sanitize_text_field($_POST['watermark_link']),
+      "nano_banana_prompt" => sanitize_text_field($_POST['nano_banana_prompt']),
       "image_modification_status" => sanitize_text_field($_POST['image_modification_status']),
       "ai_image_width" => absint($_POST['ai_image_width']),
       "ai_image_height" => absint($_POST['ai_image_height']),
@@ -3248,6 +3250,22 @@ function autowp_settings_page_handler() {
           </div>
       </div>
 
+
+
+
+      <!-- Nano Banana -->
+      <div class="form-group">
+          <label class="col-md-4 control-label" for="nano_banana_prompt"><?php esc_html_e('AI Image Editing', 'autowp'); ?></label>
+          <div class="col-md-4">
+              <input id="nano_banana_prompt" name="nano_banana_prompt" type="text" class="form-control" value="<?php echo esc_html(unserialize(get_option("autowp_settings"))["nano_banana_prompt"]) ?>" placeholder="<?php esc_html_e('Enter the prompt for image editing using Gemini Nano Banana', 'autowp'); ?>">
+              <p class="help-block"><?php esc_html_e('You can perform AI-powered image editing using the Gemini Nano Banana model. The image will be modified based on the prompt you enter.
+
+e.g: "Make the image black and white."
+"Remove any logos or links in the image."', 'autowp'); ?></p>
+          </div>
+      </div>
+
+
 <!-- Image Generating Settings -->
      <!-- Width -->
     <div class="form-group">
@@ -3345,6 +3363,7 @@ function autowp_settings_page_handler() {
         <p class="help-block"><?php esc_html_e('IMPORTANT WARNING! This field should only be used by users with the SELF HOSTING/LIFETIME package. The AutoWP plugin will not function properly if users with packages other than the Lifetime package change it.', 'autowp'); ?></p>
     </div>
 </div>
+
 
 
       <!-- Button -->
