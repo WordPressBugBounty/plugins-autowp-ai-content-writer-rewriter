@@ -42,32 +42,30 @@ function autowp_rss_website_form_page_handler(){
       
         
         // Process only the specific values needed
+        $item_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+
+        $language  = isset($_POST['languageSelect']) ? sanitize_text_field($_POST['languageSelect']) : '';
+        $subtitle  = isset($_POST['subtitleSelect']) ? sanitize_text_field($_POST['subtitleSelect']) : '';
+        $narration = isset($_POST['narrationSelect']) ? sanitize_text_field($_POST['narrationSelect']) : '';
+
         $item = array(
-          'id'                => isset($_POST['id']) ? intval($_POST['id']) : 0,
-          'website_name'      => sanitize_text_field($_POST['website_name']),
-          'domain_name'       => sanitize_text_field($_POST['domain_name']),
-          'category_id'       => isset($_POST['category_id']) ? array_map('intval', $_POST['category_id']) : array(),
+          'website_name'      => isset($_POST['website_name']) ? sanitize_text_field($_POST['website_name']) : '',
+          'domain_name'       => isset($_POST['domain_name']) ? sanitize_text_field($_POST['domain_name']) : '',
+          'category_id'       => isset($_POST['category_id']) ? array_map('intval', (array) $_POST['category_id']) : array(),
           'aigenerated_title'  => '1',
           'aigenerated_content'=> '1',
           'aigenerated_tags'   => '1',
           'aigenerated_image'  => '1',
           'post_count'         => 5,
-          'post_order'         => sanitize_text_field($_POST['post_order']),
-          'title_prompt'      => sanitize_textarea_field($_POST['title_prompt']),
-
-          'content_prompt' => '[autowp-rewriting-promptcode]' . 
-                    sanitize_text_field($_POST['languageSelect']) . ',' .
-                    sanitize_text_field($_POST['subtitleSelect']) . ',' .
-                    sanitize_text_field($_POST['narrationSelect']) .
-                    '[/autowp-rewriting-promptcode]',
-
-         
-          'tags_prompt'       => sanitize_textarea_field($_POST['tags_prompt']),
-          'image_prompt'      => sanitize_textarea_field($_POST['image_prompt']),
-          'website_type'      => 'rss',
-          'image_generating_status' => sanitize_textarea_field($_POST['image_generating_status']),
-          'author_selection'        => sanitize_text_field($_POST['author_selection']),
-          'active'                  => sanitize_text_field($_POST['active']) ?? '1'
+          'post_order'         => isset($_POST['post_order']) ? sanitize_text_field($_POST['post_order']) : 'desc',
+          'title_prompt'       => isset($_POST['title_prompt']) ? sanitize_textarea_field($_POST['title_prompt']) : '',
+          'content_prompt'     => '[autowp-rewriting-promptcode]' . $language . ',' . $subtitle . ',' . $narration . '[/autowp-rewriting-promptcode]',
+          'tags_prompt'        => isset($_POST['tags_prompt']) ? sanitize_textarea_field($_POST['tags_prompt']) : '',
+          'image_prompt'       => isset($_POST['image_prompt']) ? sanitize_textarea_field($_POST['image_prompt']) : '',
+          'website_type'       => 'rss',
+          'image_generating_status' => isset($_POST['image_generating_status']) ? sanitize_text_field($_POST['image_generating_status']) : '0',
+          'author_selection'        => isset($_POST['author_selection']) ? sanitize_text_field($_POST['author_selection']) : '1',
+          'active'                  => isset($_POST['active']) ? sanitize_text_field($_POST['active']) : '1'
         );
 
 
@@ -93,6 +91,7 @@ function autowp_rss_website_form_page_handler(){
         }
 
         $item['website_type'] = 'rss';
+        $item['id'] = $item_id;
   
         // Set WP-CRON 
   
@@ -125,16 +124,19 @@ function autowp_rss_website_form_page_handler(){
   
           $item_valid = autowp_validate_website($item);
           if ($item_valid === true) {
-              if ($item['id'] == 0) {
-                  $result = $wpdb->insert($table_name, $item);
-                  $item['id'] = $wpdb->insert_id;
+              $item_to_save = $item;
+              unset($item_to_save['id']);
+              if ($item_id == 0) {
+                  $result = $wpdb->insert($table_name, $item_to_save);
+                  $item_id = $wpdb->insert_id;
+                  $item['id'] = $item_id;
                   if ($result) {
                       $message = __('New process was successfully saved! Next process execution time : ' . get_next_cron_time('autowp_cron') .  ' in your server time. You can change process execution interval in your settings page! ', 'autowp');
                   } else {
                       $notice = __('There was an error while saving item', 'autowp');
                   }
               } else {
-                  $result = $wpdb->update($table_name, $item, array('id' => $item['id']));
+                  $result = $wpdb->update($table_name, $item_to_save, array('id' => $item_id));
                   if ($result) {
                       $message = __('New process was successfully updated! Next process execution time : ' . get_next_cron_time('autowp_cron') .  ' in your server time. You can change process execution interval in your settings page! ', 'autowp');
                   } else {

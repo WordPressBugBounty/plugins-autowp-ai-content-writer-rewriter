@@ -6,7 +6,7 @@
  * Plugin Name:       AutoWP - AI Content Writer & Rewriter
  * Plugin URI:        https://autowp.app
  * Description:       AI Content Writer & Rewriter. Write content with AI from zero. Import content from RSS, Wordpress and rewrite with AI. Generate SEO optimized content,tags,title and generate image. ChatGPT, Content Writer, Auto Content Writer, Image Generator, AutoGPT, ChatPDF, SEO optimizer, AI Training.
- * Version:           2.2.3
+ * Version:           2.2.4
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Neuralabz LTD.
@@ -33,30 +33,34 @@
  
 // Enqueque JS Files
 function autowp_enqueue_scripts() {
-    $autowp_my_plugin_dir = plugin_dir_url(__FILE__);
-    
-    
+    $autowp_my_plugin_dir_url  = plugin_dir_url(__FILE__);
+    $autowp_my_plugin_dir_path = plugin_dir_path(__FILE__);
+
+    $bootstrap_js_path = $autowp_my_plugin_dir_path . 'assets/js/bootstrap.min.js';
+    $bootstrap_js_url  = $autowp_my_plugin_dir_url . 'assets/js/bootstrap.min.js';
+    $bootstrap_js_ver  = file_exists($bootstrap_js_path) ? filemtime($bootstrap_js_path) : false;
+
     //Enqueque AutoWP JS File
-    wp_register_script( 'bootstrapjs', $autowp_my_plugin_dir . '/assets/js/bootstrap.min.js', array('jquery'), filemtime( $autowp_my_plugin_dir . '/assets/js/bootstrap.min.js' ), true );
+    wp_register_script('bootstrapjs', $bootstrap_js_url, array('jquery'), $bootstrap_js_ver, true);
 
     wp_enqueue_script( 'bootstrapjs' );
 
-    wp_register_script( 'autowpjs',$autowp_my_plugin_dir.'/assets/js/autowp.js' , array('jquery'), false, true );
+    wp_register_script( 'autowpjs',$autowp_my_plugin_dir_url.'assets/js/autowp.js' , array('jquery'), false, true );
     wp_enqueue_script( 'autowpjs' );
 
-    wp_register_script( 'autowp_ai_modal',$autowp_my_plugin_dir.'/assets/js/autowp_ai_modal.js' , array('jquery'), false, true );
+    wp_register_script( 'autowp_ai_modal',$autowp_my_plugin_dir_url.'assets/js/autowp_ai_modal.js' , array('jquery'), false, true );
     wp_enqueue_script( 'autowp_ai_modal' );
 
-    wp_register_script( 'autowp_rewriting_modal',$autowp_my_plugin_dir.'/assets/js/autowp_rewriting_modal.js' , array('jquery'), false, true );
+    wp_register_script( 'autowp_rewriting_modal',$autowp_my_plugin_dir_url.'assets/js/autowp_rewriting_modal.js' , array('jquery'), false, true );
     wp_enqueue_script( 'autowp_rewriting_modal' );
 
-    wp_register_script( 'autowp_bootstrap_bundle',$autowp_my_plugin_dir.'/assets/js/bootstrap.bundle.min.js' , array('jquery','autowp_jquery_ui'), false, true );
+    wp_register_script( 'autowp_bootstrap_bundle',$autowp_my_plugin_dir_url.'assets/js/bootstrap.bundle.min.js' , array('jquery','autowp_jquery_ui'), false, true );
     wp_enqueue_script( 'autowp_bootstrap_bundle' );
 
-    wp_register_script( 'autowp_jquery_ui',$autowp_my_plugin_dir.'/assets/js/jquery-ui.min.js' , array('jquery'), false, true );
+    wp_register_script( 'autowp_jquery_ui',$autowp_my_plugin_dir_url.'assets/js/jquery-ui.min.js' , array('jquery'), false, true );
     wp_enqueue_script( 'autowp_jquery_ui' );
 
-    wp_register_script( 'autowp_sortable_list',$autowp_my_plugin_dir.'/assets/js/sortable_list.js' , array('jquery'), false, true );
+    wp_register_script( 'autowp_sortable_list',$autowp_my_plugin_dir_url.'assets/js/sortable_list.js' , array('jquery'), false, true );
     wp_enqueue_script( 'autowp_sortable_list' );
 
     wp_enqueue_script('autowp-toggle-js', plugins_url('assets/js/admin-toggle.js', __FILE__), array('jquery'), '1.0', true);
@@ -3542,11 +3546,13 @@ function autowp_manual_post_rss_form_page_setOptions($form_data){
   
 }
 
-function schedule_autowp_manual_post_rss_event($form_data) {
-  // Calculate the timestamp for, let's say, 5 minutes from now
-  $timestamp = time() + 2;
+function schedule_autowp_manual_post_rss_event($form_data = array()) {
+  if (!is_array($form_data) || empty($form_data) || !isset($form_data['website_type'])) {
+    return;
+  }
 
   // Schedule the event and pass form data as parameters
+  $timestamp = time() + 2;
   wp_schedule_single_event($timestamp, 'autowp_manual_post_rss_event', array($form_data));
 }
 
@@ -4844,6 +4850,9 @@ function autowp_manual_post_wp_form_page_handler() {
 
 
 function autowp_manual_post_rss_scheduled_event($form_data) {
+  if (!is_array($form_data) || !isset($form_data['website_type'])) {
+    return;
+  }
 
   if($form_data['website_type'] === 'rss'){
     // Call the function with the form data
