@@ -6,10 +6,10 @@
  * Plugin Name:       AutoWP - AI Content Writer & Rewriter
  * Plugin URI:        https://autowp.app
  * Description:       AI Content Writer & Rewriter. Write content with AI from zero. Import content from RSS, Wordpress and rewrite with AI. Generate SEO optimized content,tags,title and generate image. ChatGPT, Content Writer, Auto Content Writer, Image Generator, AutoGPT, ChatPDF, SEO optimizer, AI Training.
- * Version:           2.2.4
+ * Version:           2.2.6
  * Requires at least: 5.2
  * Requires PHP:      7.2
- * Author:            Neuralabz LTD.
+ * Author:            basarventures
  * Author URI:        https://autowp.app
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -1186,7 +1186,7 @@ function autowp_generalSettings(){
         <p class="card-text"> <?php echo esc_html__('AI-Generated Image Balance:', 'autowp'); ?> <?php echo esc_html($user['aigenerated_image_balance']) . ' ' . esc_html__('Images', 'autowp'); ?></p>
         <br>
         <a href="https://api.whatsapp.com/send/?phone=447384097397" class="btn btn-primary"><?php echo esc_html__('Contact Us', 'autowp'); ?></a>
-        <a href="https://billing.stripe.com/p/login/00g6p317J8cZ07u3cc" class="btn btn-primary"><?php echo esc_html__('Manage Subscription', 'autowp'); ?></a>
+        <a href="https://billing.stripe.com/p/login/eVq28scVg4UT1qw929fQI00" class="btn btn-primary"><?php echo esc_html__('Manage Subscription', 'autowp'); ?></a>
       </div>
     </div>
   </div>
