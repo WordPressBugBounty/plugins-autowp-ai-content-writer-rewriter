@@ -6,7 +6,7 @@
  * Plugin Name:       AutoWP - AI Content Writer & Rewriter
  * Plugin URI:        https://autowp.app
  * Description:       AI Content Writer & Rewriter. Write content with AI from zero. Import content from RSS, Wordpress and rewrite with AI. Generate SEO optimized content,tags,title and generate image. ChatGPT, Content Writer, Auto Content Writer, Image Generator, AutoGPT, ChatPDF, SEO optimizer, AI Training.
- * Version:           2.2.6
+ * Version:           2.2.7
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            basarventures
@@ -1185,7 +1185,7 @@ function autowp_generalSettings(){
         <p class="card-text"> <?php echo esc_html__('AI-Generated Post Balance:', 'autowp'); ?> <?php echo esc_html($user['aigenerated_post_balance']) . ' ' . esc_html__('Posts', 'autowp'); ?></p>
         <p class="card-text"> <?php echo esc_html__('AI-Generated Image Balance:', 'autowp'); ?> <?php echo esc_html($user['aigenerated_image_balance']) . ' ' . esc_html__('Images', 'autowp'); ?></p>
         <br>
-        <a href="https://api.whatsapp.com/send/?phone=447384097397" class="btn btn-primary"><?php echo esc_html__('Contact Us', 'autowp'); ?></a>
+        <a href="https://api.whatsapp.com/send/?phone=61410688978" class="btn btn-primary"><?php echo esc_html__('Contact Us', 'autowp'); ?></a>
         <a href="https://billing.stripe.com/p/login/eVq28scVg4UT1qw929fQI00" class="btn btn-primary"><?php echo esc_html__('Manage Subscription', 'autowp'); ?></a>
       </div>
     </div>
@@ -1256,7 +1256,7 @@ function autowp_generalSettings(){
       echo '<div class="card text-center" style="width: 100%; margin-bottom: 20px;">
           <div class="card-body">
               <h4 class="card-title" style="font-weight: bold; color: #FF6347;">' . esc_html__('TÜRKÇE DESTEK HATTI VE ÖZEL İNDİRİMLER İÇİN TIKLAYIN!', 'autowp') . '</h4>
-              <a href="https://api.whatsapp.com/send/?phone=447384097397" class="btn btn-warning">' . esc_html__('Tıklayın', 'autowp') . '</a>
+              <a href="https://api.whatsapp.com/send/?phone=61410688978" class="btn btn-warning">' . esc_html__('Tıklayın', 'autowp') . '</a>
           </div>
       </div>';
   }

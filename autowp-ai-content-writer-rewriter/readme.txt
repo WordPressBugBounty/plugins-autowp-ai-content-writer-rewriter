@@ -1,5 +1,5 @@
 === AutoWP - AI Content Writer & Rewriter ===
-Contributors: Neuralabz LTD, berkbirkan
+Contributors: basarventures
 Tags: ai rewriter,ai content generator,ai post generator,ai image generator,artificial intelligence
 Requires at least: 5.2
 Tested up to: 6.6.2
