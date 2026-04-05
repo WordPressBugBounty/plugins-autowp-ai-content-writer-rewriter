@@ -2,9 +2,9 @@
 Contributors: basarventures
 Tags: ai rewriter,ai content generator,ai post generator,ai image generator,artificial intelligence
 Requires at least: 5.2
-Tested up to: 6.6.2
+Tested up to: 6.9.4
 Requires PHP: 7.2
-Stable tag: 2.2.6
+Stable tag: 2.2.8
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -133,10 +133,19 @@ Yes, AutoWP operates on a subscription-based model, offering various plans to su
 
 == Changelog ==
 
+= 2.2.8 =
+* Improved sorting behavior in the website list table.
+* Improved featured image imports by using WordPress media sideload handling.
+* Added clearer error logging for post creation and featured image import failures.
+* Updated WordPress compatibility metadata.
+
 = 1.0 =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 2.2.8 =
+Improves admin table sorting, featured image import reliability, and release compatibility metadata.
 
 = 1.0 =
 Initial release of AutoWP. Experience the future of content creation with AI.

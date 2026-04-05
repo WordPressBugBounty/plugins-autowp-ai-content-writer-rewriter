@@ -6,7 +6,7 @@
  * Plugin Name:       AutoWP - AI Content Writer & Rewriter
  * Plugin URI:        https://autowp.app
  * Description:       AI Content Writer & Rewriter. Write content with AI from zero. Import content from RSS, Wordpress and rewrite with AI. Generate SEO optimized content,tags,title and generate image. ChatGPT, Content Writer, Auto Content Writer, Image Generator, AutoGPT, ChatPDF, SEO optimizer, AI Training.
- * Version:           2.2.7
+ * Version:           2.2.8
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            basarventures
@@ -19,7 +19,7 @@
 
 
 
- defined( 'ABSPATH' ) or die( 'PERMİSSİON ERROR!' );
+ defined( 'ABSPATH' ) or die( 'PERMISSION ERROR!' );
  
  require plugin_dir_path( __FILE__ ) . 'includes/new-wp-website-form.php';
  require plugin_dir_path( __FILE__ ) . 'includes/new-rss-website-form.php';
@@ -240,57 +240,45 @@ function autowp_get_wpcron_time($time){
 
 
 function autowp_set_featured_image($image_url, $post_id) {
-  $upload_dir = wp_upload_dir();
-
-  // Kullanılacak güvenli fonksiyon: wp_remote_get
-  $response = wp_remote_get($image_url);
-
-  // HTTP hata kontrolü
-  if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+  error_log('[AutoWP] set_featured_image start post_id=' . intval($post_id) . ' image_url=' . esc_url_raw($image_url));
+  if (empty($image_url)) {
+      error_log('[AutoWP] set_featured_image missing_image_url post_id=' . intval($post_id));
       return false;
   }
 
-  $image_data = wp_remote_retrieve_body($response);
+  require_once ABSPATH . 'wp-admin/includes/file.php';
+  require_once ABSPATH . 'wp-admin/includes/media.php';
+  require_once ABSPATH . 'wp-admin/includes/image.php';
 
-  if ($image_data) {
-      $filename = sanitize_file_name(basename($image_url));
-      $file_path = trailingslashit($upload_dir['path']) . $filename;
-      $file_path = wp_unique_filename($upload_dir['path'], $filename); // Make sure the file name is unique
-
-      // Güvenli bir şekilde dosyayı kaydet
-      $file_saved = wp_upload_bits($filename, null, $image_data);
-
-      if (!$file_saved['error']) {
-          $file = $file_saved['file'];
-
-          $wp_filetype = wp_check_filetype($file, null);
-
-          $attachment = array(
-              'post_mime_type' => $wp_filetype['type'],
-              'post_title'     => $filename,
-              'post_content'   => '',
-              'post_status'    => 'inherit'
-          );
-
-          // Use the 'wp_insert_attachment_data' filter to modify attachment data before insertion
-          $attachment = apply_filters('wp_insert_attachment_data', $attachment, $file, $post_id);
-
-          $attach_id = wp_insert_attachment($attachment, $file, $post_id);
-
-          if (!is_wp_error($attach_id)) {
-              require_once ABSPATH . 'wp-admin/includes/image.php';
-              $attach_data = wp_generate_attachment_metadata($attach_id, $file);
-              wp_update_attachment_metadata($attach_id, $attach_data);
-
-              return $attach_id;
-          } else {
-              // If there's an error in attachment insertion, delete the file
-              unlink($file);
-          }
-      }
+  $tmp_file = download_url($image_url, 30);
+  if (is_wp_error($tmp_file)) {
+      error_log('[AutoWP] set_featured_image download_url failed post_id=' . intval($post_id) . ' image_url=' . esc_url_raw($image_url) . ' error=' . $tmp_file->get_error_message());
+      return false;
   }
 
-  return false;
+  $path = wp_parse_url($image_url, PHP_URL_PATH);
+  $filename = sanitize_file_name(basename($path ? $path : $image_url));
+  if (empty($filename) || strpos($filename, '.') === false) {
+      $filetype = wp_check_filetype_and_ext($tmp_file, $filename ? $filename : 'autowp-image');
+      $extension = !empty($filetype['ext']) ? $filetype['ext'] : 'jpg';
+      $filename = 'autowp-image-' . wp_generate_password(12, false, false) . '.' . $extension;
+  }
+
+  $file_array = array(
+      'name'     => $filename,
+      'tmp_name' => $tmp_file,
+  );
+
+  $attachment_id = media_handle_sideload($file_array, $post_id, get_the_title($post_id));
+
+  if (is_wp_error($attachment_id)) {
+      @unlink($tmp_file);
+      error_log('[AutoWP] set_featured_image media_handle_sideload failed post_id=' . intval($post_id) . ' image_url=' . esc_url_raw($image_url) . ' error=' . $attachment_id->get_error_message());
+      return false;
+  }
+
+  error_log('[AutoWP] set_featured_image success post_id=' . intval($post_id) . ' attachment_id=' . intval($attachment_id) . ' filename=' . $filename);
+  return $attachment_id;
 }
 
 
@@ -500,12 +488,22 @@ function autowp_set_new_post($post_title, $post_content, $post_status, $post_aut
 
 
   $new_post_id = wp_insert_post($post);
+  if (is_wp_error($new_post_id)) {
+    error_log('[AutoWP] set_new_post wp_insert_post failed title=' . sanitize_text_field($post_title) . ' error=' . $new_post_id->get_error_message());
+    return false;
+  }
 
   if (!empty($featured_image_url)) {
+    error_log('[AutoWP] set_new_post attempting_featured_image post_id=' . intval($new_post_id) . ' image_url=' . esc_url_raw($featured_image_url));
     $image_id = autowp_set_featured_image($featured_image_url, $new_post_id);
     if ($image_id !== false) {
-      set_post_thumbnail($new_post_id, $image_id);
+      $thumbnail_result = set_post_thumbnail($new_post_id, $image_id);
+      error_log('[AutoWP] set_new_post set_post_thumbnail result post_id=' . intval($new_post_id) . ' attachment_id=' . intval($image_id) . ' result=' . var_export($thumbnail_result, true));
+    } else {
+      error_log('[AutoWP] set_new_post featured_image_import_failed post_id=' . intval($new_post_id) . ' image_url=' . esc_url_raw($featured_image_url));
     }
+  } else {
+    error_log('[AutoWP] set_new_post no_featured_image_url post_id=' . intval($new_post_id));
   }
 
   return $new_post_id; // Fonksiyonun sonunda bu satırı ekleyin
@@ -1702,19 +1700,18 @@ private $table_data;
       // Sorting function
       function usort_reorder($a, $b)
       {
-          // If no sort, default to user_login
-          $sanitized_orderby = sanitize_text_field($_GET['orderby']);
-          $orderby = (!empty($sanitized_orderby)) ? $sanitized_orderby : 'website_name';
-  
-          // If no order, default to asc
-          $sanitized_get_id = sanitize_text_field($_GET['id']);
-          $order = (!empty($sanitized_get_id)) ? $sanitized_get_id : 'asc';
-  
-          // Determine sort order
-          $result = strcmp($a[$orderby], $b[$orderby]);
-  
-          // Send final sort direction to usort
-          return ($order === 'asc') ? $result : -$result;
+          $sortable_columns = array('website_name', 'domain_name', 'id');
+          $orderby = isset($_GET['orderby']) ? sanitize_key(wp_unslash($_GET['orderby'])) : 'website_name';
+          $orderby = in_array($orderby, $sortable_columns, true) ? $orderby : 'website_name';
+
+          $order = isset($_GET['order']) ? strtolower(sanitize_text_field(wp_unslash($_GET['order']))) : 'asc';
+          $order = ('desc' === $order) ? 'desc' : 'asc';
+
+          $value_a = isset($a[$orderby]) ? (string) $a[$orderby] : '';
+          $value_b = isset($b[$orderby]) ? (string) $b[$orderby] : '';
+          $result = strnatcasecmp($value_a, $value_b);
+
+          return ('asc' === $order) ? $result : -$result;
       }
 
       
