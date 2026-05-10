@@ -496,7 +496,7 @@ function autowp_websites_form_meta_box_handler($item)
             echo 'selected';
         } ?>><?php esc_html_e('Original Image', 'autowp'); ?></option>
     </select>
-    <p class="form-text"><?php esc_html_e('By default FLUX Realism LoRA is selected.', 'autowp'); ?></p>
+    <p class="form-text"><?php esc_html_e('By default No Image is selected. Use DuckDuckGo Search to find images in the internet.', 'autowp'); ?></p>
 </div>
 
 

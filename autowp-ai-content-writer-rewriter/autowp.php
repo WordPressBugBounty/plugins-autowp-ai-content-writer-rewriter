@@ -6,7 +6,7 @@
  * Plugin Name:       AutoWP - AI Content Writer & Rewriter
  * Plugin URI:        https://autowp.app
  * Description:       AI Content Writer & Rewriter. Write content with AI from zero. Import content from RSS, Wordpress and rewrite with AI. Generate SEO optimized content,tags,title and generate image. ChatGPT, Content Writer, Auto Content Writer, Image Generator, AutoGPT, ChatPDF, SEO optimizer, AI Training.
- * Version:           2.2.8
+ * Version:           2.2.10
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            basarventures
@@ -588,6 +588,10 @@ function autowp_create_alert() {
       $dismissed_announcements = [];
   }
 
+  $has_actionable_alert = !empty($alerts);
+  $notice_button_url = $has_actionable_alert ? admin_url('admin.php?page=autowp_settings') : admin_url('admin.php?page=autowp_menu');
+  $notice_button_label = $has_actionable_alert ? __('Go to Settings', 'autowp') : __('Upgrade Membership', 'autowp');
+
   // Eğer alert veya duyurular varsa
   if (!empty($alerts) || !empty($announcements)) {
       echo '
@@ -596,7 +600,14 @@ function autowp_create_alert() {
       
       // Eğer alerts varsa göster
       if (!empty($alerts)) {
-          echo '<p>' . esc_html($alerts) . '</p>';
+          $alert_message = rtrim((string) $alerts);
+          $cron_message = __('Please update your settings and wait until the next cron trigger. This notice will be cleared then.', 'autowp');
+
+          if (strpos($alert_message, $cron_message) === false) {
+              $alert_message .= ' ' . $cron_message;
+          }
+
+          echo '<p>' . esc_html(trim($alert_message)) . '</p>';
       }
 
       // Eğer duyurular varsa, her birini ayrı bir satırda göster
@@ -610,7 +621,7 @@ function autowp_create_alert() {
           }
       }
       
-      echo '<p><a href="admin.php?page=autowp_menu" class="button button-primary">Upgrade Membership</a></p>
+      echo '<p><a href="' . esc_url($notice_button_url) . '" class="button button-primary">' . esc_html($notice_button_label) . '</a></p>
       </div>';
 
       // Bu butonlar için JavaScript ekle (AJAX ile belirli bir duyuruyu gizle)
@@ -4345,7 +4356,7 @@ function autowp_manual_post_news_form_page_handler(){
         <option value="6"><?php esc_html_e('Default Image', 'autowp'); ?></option>
         <option value="7"><?php esc_html_e('No Image', 'autowp'); ?></option>
     </select>
-    <p class="form-text"><?php esc_html_e('By default FLUX Realism LoRA is selected.', 'autowp'); ?></p>
+    <p class="form-text"><?php esc_html_e('By default No Image is selected. Use DuckDuckGo Search to find images in the internet.', 'autowp'); ?></p>
 </div>
 
 
@@ -4671,7 +4682,7 @@ function autowp_manual_post_wp_form_page_handler() {
         <option value="7"><?php esc_html_e('No Image', 'autowp'); ?></option>
         <option value="8"><?php esc_html_e('Original Image', 'autowp'); ?></option>
     </select>
-    <p class="form-text"><?php esc_html_e('By default FLUX Realism LoRA is selected.', 'autowp'); ?></p>
+    <p class="form-text"><?php esc_html_e('By default No Image is selected. Use DuckDuckGo Search to find images in the internet.', 'autowp'); ?></p>
 </div>
 
 
@@ -4992,7 +5003,7 @@ function autowp_manual_post_rss_form_page_handler() {
         <option value="7"><?php esc_html_e('No Image', 'autowp'); ?></option>
         
     </select>
-    <p class="form-text"><?php esc_html_e('By default FLUX Realism LoRA is selected. ', 'autowp'); ?></p>
+    <p class="form-text"><?php esc_html_e('By default No Image is selected. Use DuckDuckGo Search to find images in the internet. ', 'autowp'); ?></p>
 </div>
 
 
@@ -5609,7 +5620,7 @@ function autowp_manual_post_agenticscraper_form_page_handler() {
         <option value="6"><?php esc_html_e('Default Image', 'autowp'); ?></option>
         <option value="7"><?php esc_html_e('No Image', 'autowp'); ?></option>
     </select>
-    <p class="form-text"><?php esc_html_e('By default FLUX Realism LoRA is selected.', 'autowp'); ?></p>
+    <p class="form-text"><?php esc_html_e('By default No Image is selected. Use DuckDuckGo Search to find images in the internet.', 'autowp'); ?></p>
 </div>
 
 
@@ -6133,7 +6144,7 @@ function autowp_manual_post_ai_form_page_handler() {
         <option value="6"><?php esc_html_e('Default Image', 'autowp'); ?></option>
         <option value="7"><?php esc_html_e('No Image', 'autowp'); ?></option>
     </select>
-    <p class="form-text"><?php esc_html_e('By default FLUX Realism LoRA is selected.', 'autowp'); ?></p>
+    <p class="form-text"><?php esc_html_e('By default No Image is selected. Use DuckDuckGo Search to find images in the internet.', 'autowp'); ?></p>
 </div>
 
 

@@ -321,7 +321,7 @@ function autowp_rss_websites_form_meta_box_handler($item){
 
 
     </select>
-    <p class="form-text"><?php esc_html_e('By default FLUX Realism LoRA is selected.', 'autowp'); ?></p>
+    <p class="form-text"><?php esc_html_e('By default No Image is selected. Use DuckDuckGo Search to find images in the internet.', 'autowp'); ?></p>
 </div>
 
 

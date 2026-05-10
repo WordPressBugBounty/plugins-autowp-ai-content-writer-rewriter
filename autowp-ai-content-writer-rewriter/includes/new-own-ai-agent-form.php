@@ -435,7 +435,7 @@ function autowp_agenticscrape_meta_box_renderer($item) {
                 <option value="7" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '7'); ?>>No Image</option>
                 
             </select>
-            <p class="form-text">By default FLUX Realism LoRA is selected.</p>
+            <p class="form-text">By default No Image is selected. Use DuckDuckGo Search to find images in the internet.</p>
         </div>
         <!-- Long Description Prompt -->
         <div class="mb-3">
