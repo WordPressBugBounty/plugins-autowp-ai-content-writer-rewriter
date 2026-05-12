@@ -427,8 +427,8 @@ function autowp_agenticscrape_meta_box_renderer($item) {
                 <option value="0" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '0'); ?>>FLUX Realism LoRA</option>
                 <option value="1" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '1'); ?>>Stable Diffusion Ultra</option>
                 <option value="2" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '2'); ?>>Stable Diffusion Core</option>
-                <option value="3" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '3'); ?>>DALL-E 2</option>
-                <option value="4" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '4'); ?>>DALL-E 3</option>
+                <option value="3" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '3'); ?>>GPT Image 1 Mini</option>
+                <option value="4" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '4'); ?>>GPT Image 2</option>
                 <option value="5" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '5'); ?>>DuckDuckGo Search</option>
 
                 <option value="6" <?php selected(isset($item['image_generating_status']) ? $item['image_generating_status'] : '', '6'); ?>>Default Image</option>

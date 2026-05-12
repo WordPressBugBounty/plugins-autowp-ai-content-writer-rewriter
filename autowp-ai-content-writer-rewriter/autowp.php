@@ -6,7 +6,7 @@
  * Plugin Name:       AutoWP - AI Content Writer & Rewriter
  * Plugin URI:        https://autowp.app
  * Description:       AI Content Writer & Rewriter. Write content with AI from zero. Import content from RSS, Wordpress and rewrite with AI. Generate SEO optimized content,tags,title and generate image. ChatGPT, Content Writer, Auto Content Writer, Image Generator, AutoGPT, ChatPDF, SEO optimizer, AI Training.
- * Version:           2.2.10
+ * Version:           2.3.0
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            basarventures
@@ -1015,11 +1015,11 @@ function autowp_set_wpcron(){
     "ai_image_width" =>  0,
     "ai_image_height" => 0,
     "stable_diffusion_style" => 'None',
-    // New settings for flux, stable diffusion size, DALL-E 2, DALL-E 3 sizes
+    // OpenAI image settings stored under legacy option keys for compatibility
     "flux_image_size" => 'landscape_16_9',               // Default value for flux image size
     "stable_diffusion_size" => '16:9',               // Default value for stable diffusion size
-    "dalle_2_size" => '1024x1024',                    // Default value for DALL-E 2 size
-    "dalle_3_size" => '1024x1024',                   // Default value for DALL-E 3 size
+    "dalle_2_size" => '1024x1024',                    // Default value for GPT Image 1 Mini size
+    "dalle_3_size" => '1024x1024',                   // Default value for GPT Image 2 size
     "dalle_3_style" => 'natural',
     "image_format" => "png",
      // New default values
@@ -3182,11 +3182,11 @@ function autowp_settings_page_handler() {
   </div>
 </div>
 
-<legend><?php esc_html_e('DALL-E Settings', 'autowp'); ?></legend>
+<legend><?php esc_html_e('OpenAI Image Settings', 'autowp'); ?></legend>
 
-<!-- DALL-E 2 Size -->
+<!-- GPT Image 1 Mini Size -->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="dalle_2_size"><?php esc_html_e('DALL-E 2 Size', 'autowp'); ?></label>
+  <label class="col-md-4 control-label" for="dalle_2_size"><?php esc_html_e('GPT Image 1 Mini Size', 'autowp'); ?></label>
   <div class="col-md-4">
     <select id="dalle_2_size" name="dalle_2_size" class="form-control">
       <?php
@@ -3203,9 +3203,9 @@ function autowp_settings_page_handler() {
 </div>
 
 
-<!-- DALL-E 3 Size -->
+<!-- GPT Image 2 Size -->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="dalle_3_size"><?php esc_html_e('DALL-E 3 Size', 'autowp'); ?></label>
+  <label class="col-md-4 control-label" for="dalle_3_size"><?php esc_html_e('GPT Image 2 Size', 'autowp'); ?></label>
   <div class="col-md-4">
     <select id="dalle_3_size" name="dalle_3_size" class="form-control">
       <?php
@@ -3222,9 +3222,9 @@ function autowp_settings_page_handler() {
 </div>
 
 
-<!-- DALL-E 3 Style -->
+<!-- Legacy OpenAI Style -->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="dalle_3_style"><?php esc_html_e('DALL-E 3 Style', 'autowp'); ?></label>
+  <label class="col-md-4 control-label" for="dalle_3_style"><?php esc_html_e('Legacy OpenAI Style', 'autowp'); ?></label>
   <div class="col-md-4">
     <select id="dalle_3_style" name="dalle_3_style" class="form-control">
       <?php
@@ -3237,6 +3237,7 @@ function autowp_settings_page_handler() {
       }
       ?>
     </select>
+    <p class="help-block"><?php esc_html_e('This legacy style setting is kept for backward compatibility and is not used by GPT Image 2 or GPT Image 1 Mini.', 'autowp'); ?></p>
   </div>
 </div>
 
@@ -4349,8 +4350,8 @@ function autowp_manual_post_news_form_page_handler(){
         <option value="0"><?php esc_html_e('FLUX Realism LoRA', 'autowp'); ?></option>
         <option value="1"><?php esc_html_e('Stable Diffusion Ultra', 'autowp'); ?></option>
         <option value="2"><?php esc_html_e('Stable Diffusion Core', 'autowp'); ?></option>
-        <option value="3"><?php esc_html_e('DALL-E 2', 'autowp'); ?></option>
-        <option value="4"><?php esc_html_e('DALL-E 3', 'autowp'); ?></option>
+        <option value="3"><?php esc_html_e('GPT Image 1 Mini', 'autowp'); ?></option>
+        <option value="4"><?php esc_html_e('GPT Image 2', 'autowp'); ?></option>
         <option value="5"><?php esc_html_e('DuckDuckGo Search', 'autowp'); ?></option>
 
         <option value="6"><?php esc_html_e('Default Image', 'autowp'); ?></option>
@@ -4675,8 +4676,8 @@ function autowp_manual_post_wp_form_page_handler() {
         <option value="0"><?php esc_html_e('FLUX Realism LoRA', 'autowp'); ?></option>
         <option value="1"><?php esc_html_e('Stable Diffusion Ultra', 'autowp'); ?></option>
         <option value="2"><?php esc_html_e('Stable Diffusion Core', 'autowp'); ?></option>
-        <option value="3"><?php esc_html_e('DALL-E 2', 'autowp'); ?></option>
-        <option value="4"><?php esc_html_e('DALL-E 3', 'autowp'); ?></option>
+        <option value="3"><?php esc_html_e('GPT Image 1 Mini', 'autowp'); ?></option>
+        <option value="4"><?php esc_html_e('GPT Image 2', 'autowp'); ?></option>
         <option value="5"><?php esc_html_e('DuckDuckGo Search', 'autowp'); ?></option>
         <option value="6"><?php esc_html_e('Default Image', 'autowp'); ?></option>
         <option value="7"><?php esc_html_e('No Image', 'autowp'); ?></option>
@@ -4996,8 +4997,8 @@ function autowp_manual_post_rss_form_page_handler() {
         <option value="0"><?php esc_html_e('FLUX Realism LoRA', 'autowp'); ?></option>
         <option value="1"><?php esc_html_e('Stable Diffusion Ultra', 'autowp'); ?></option>
         <option value="2"><?php esc_html_e('Stable Diffusion Core', 'autowp'); ?></option>
-        <option value="3"><?php esc_html_e('DALL-E 2', 'autowp'); ?></option>
-        <option value="4"><?php esc_html_e('DALL-E 3', 'autowp'); ?></option>
+        <option value="3"><?php esc_html_e('GPT Image 1 Mini', 'autowp'); ?></option>
+        <option value="4"><?php esc_html_e('GPT Image 2', 'autowp'); ?></option>
         <option value="5"><?php esc_html_e('DuckDuckGo Search', 'autowp'); ?></option>
         <option value="6"><?php esc_html_e('Default Image', 'autowp'); ?></option>
         <option value="7"><?php esc_html_e('No Image', 'autowp'); ?></option>
@@ -5614,8 +5615,8 @@ function autowp_manual_post_agenticscraper_form_page_handler() {
         <option value="0"><?php esc_html_e('FLUX Realism LoRA', 'autowp'); ?></option>
         <option value="1"><?php esc_html_e('Stable Diffusion Ultra', 'autowp'); ?></option>
         <option value="2"><?php esc_html_e('Stable Diffusion Core', 'autowp'); ?></option>
-        <option value="3"><?php esc_html_e('DALL-E 2', 'autowp'); ?></option>
-        <option value="4"><?php esc_html_e('DALL-E 3', 'autowp'); ?></option>
+        <option value="3"><?php esc_html_e('GPT Image 1 Mini', 'autowp'); ?></option>
+        <option value="4"><?php esc_html_e('GPT Image 2', 'autowp'); ?></option>
         <option value="5"><?php esc_html_e('DuckDuckGo Search', 'autowp'); ?></option>
         <option value="6"><?php esc_html_e('Default Image', 'autowp'); ?></option>
         <option value="7"><?php esc_html_e('No Image', 'autowp'); ?></option>
@@ -6137,8 +6138,8 @@ function autowp_manual_post_ai_form_page_handler() {
         <option value="0"><?php esc_html_e('FLUX Realism LoRA', 'autowp'); ?></option>
         <option value="1"><?php esc_html_e('Stable Diffusion Ultra', 'autowp'); ?></option>
         <option value="2"><?php esc_html_e('Stable Diffusion Core', 'autowp'); ?></option>
-        <option value="3"><?php esc_html_e('DALL-E 2', 'autowp'); ?></option>
-        <option value="4"><?php esc_html_e('DALL-E 3', 'autowp'); ?></option>
+        <option value="3"><?php esc_html_e('GPT Image 1 Mini', 'autowp'); ?></option>
+        <option value="4"><?php esc_html_e('GPT Image 2', 'autowp'); ?></option>
         <option value="5"><?php esc_html_e('DuckDuckGo Search', 'autowp'); ?></option>
 
         <option value="6"><?php esc_html_e('Default Image', 'autowp'); ?></option>

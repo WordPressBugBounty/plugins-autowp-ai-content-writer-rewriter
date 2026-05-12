@@ -723,10 +723,10 @@ function autowp_news_websites_form_meta_box_handler($item){
         } ?>><?php esc_html_e('Stable Diffusion Core', 'autowp'); ?></option>
         <option value="3" <?php if ($item['image_generating_status'] === '3') {
             echo 'selected';
-        } ?>><?php esc_html_e('DALL-E 2', 'autowp'); ?></option>
+        } ?>><?php esc_html_e('GPT Image 1 Mini', 'autowp'); ?></option>
         <option value="4" <?php if ($item['image_generating_status'] === '4') {
             echo 'selected';
-        } ?>><?php esc_html_e('DALL-E 3', 'autowp'); ?></option>
+        } ?>><?php esc_html_e('GPT Image 2', 'autowp'); ?></option>
         <option value="5" <?php if ($item['image_generating_status'] === '5') {
             echo 'selected';
         } ?>><?php esc_html_e('DuckDuckGo Search', 'autowp'); ?></option>

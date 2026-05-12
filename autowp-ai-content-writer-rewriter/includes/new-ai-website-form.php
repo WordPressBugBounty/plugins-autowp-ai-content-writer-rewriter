@@ -340,12 +340,12 @@ function autowp_ai_website_form_page_handler(){
 
         <option value="3" <?php if ($item['image_generating_status'] === '3') {
             echo 'selected';
-        } ?>><?php esc_html_e('DALL-E 2', 'autowp'); ?></option>
+        } ?>><?php esc_html_e('age 1 Mini', 'autowp'); ?></option>
 
 
         <option value="4" <?php if ($item['image_generating_status'] === '4') {
             echo 'selected';
-        } ?>><?php esc_html_e('DALL-E 3', 'autowp'); ?></option>
+        } ?>><?php esc_html_e('age 2', 'autowp'); ?></option>
 
 
         <option value="5" <?php if ($item['image_generating_status'] === '5') {

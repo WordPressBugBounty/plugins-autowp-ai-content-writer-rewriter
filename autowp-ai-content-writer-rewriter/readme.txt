@@ -4,7 +4,7 @@ Tags: ai rewriter,ai content generator,ai post generator,ai image generator,arti
 Requires at least: 5.2
 Tested up to: 6.9.4
 Requires PHP: 7.2
-Stable tag: 2.2.10
+Stable tag: 2.3.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -133,6 +133,11 @@ Yes, AutoWP operates on a subscription-based model, offering various plans to su
 
 == Changelog ==
 
+= 2.3.0 =
+* Migrated deprecated DALL-E image options to OpenAI GPT Image models.
+* Updated plugin UI labels and settings copy to reflect GPT Image 1 Mini and GPT Image 2.
+* Preserved backward compatibility with existing AutoWP installs using legacy image mode IDs and option keys.
+
 = 2.2.10 =
 * Improved sorting behavior in the website list table.
 * Improved featured image imports by using WordPress media sideload handling.
@@ -143,6 +148,9 @@ Yes, AutoWP operates on a subscription-based model, offering various plans to su
 * Initial release.
 
 == Upgrade Notice ==
+
+= 2.3.0 =
+Migrates deprecated DALL-E options to GPT Image models while keeping backward compatibility for existing installs.
 
 = 2.2.10 =
 Improves admin table sorting, featured image import reliability, and release compatibility metadata.
